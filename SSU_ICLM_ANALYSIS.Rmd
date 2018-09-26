@@ -47,11 +47,16 @@ College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progr
 ###  Output of Undergraduate FTE Statistics
 ```{r Outuput1, echo=TRUE}
 kable(UGRD_FTE_SUMMARY) %>% 
-kable_styling("striped", position = "left", font_size = 10)
+kable_styling("striped", full_width = F, position = "center", font_size = 10)
 
 ```
 ###  Output of Undergraduate College Pivot
 ```{r Outuput2, echo=TRUE}
 kable(College_Pivot) %>% 
-kable_styling("striped", position = "left", font_size = 10)
+kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
+###  Plot Student College vs. Course College Histogram
+```{r}
+
+```
+

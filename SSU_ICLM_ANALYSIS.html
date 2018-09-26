@@ -172,8 +172,8 @@ UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] &lt;- 'TOTA
 <div id="output-of-undergraduate-fte-statistics" class="section level3">
 <h3>Output of Undergraduate FTE Statistics</h3>
 <pre class="r"><code>kable(UGRD_FTE_SUMMARY) %&gt;% 
-kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 10)</code></pre>
-<table class="table table-striped" style="font-size: 10px; ">
+kable_styling(&quot;striped&quot;, full_width = F, position = &quot;left&quot;, font_size = 10)</code></pre>
+<table class="table table-striped" style="font-size: 10px; width: auto !important; ">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -744,8 +744,8 @@ TOTAL
 <div id="output-of-undergraduate-college-pivot" class="section level3">
 <h3>Output of Undergraduate College Pivot</h3>
 <pre class="r"><code>kable(College_Pivot) %&gt;% 
-kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 10)</code></pre>
-<table class="table table-striped" style="font-size: 10px; ">
+kable_styling(&quot;striped&quot;, full_width = F, position = &quot;center&quot;, font_size = 10)</code></pre>
+<table class="table table-striped" style="font-size: 10px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -1246,6 +1246,9 @@ Social Sciences
 </tr>
 </tbody>
 </table>
+</div>
+<div id="plot-student-college-vs.course-college-histogram" class="section level3">
+<h3>Plot Student College vs. Course College Histogram</h3>
 </div>
 
 
