@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 ```
-##  Initiate the Workspace and Import the Two Data Sets
+###  Initiate the Workspace and Import the 2 Data Sets from Excel Files  
 ```{r Initiate and Import Data, echo=FALSE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readxl)
@@ -19,7 +19,7 @@ library(kableExtra)
 ICLM_ENROLLMENT <- read_excel("ICLM_ENROLLMENT.xlsx")
 ICLM_MAIN <- read_excel("ICLM_MAIN.xlsx")
 ```
-##  Munge the data sets
+###  Munge the data sets
 ```{r Munge, echo=TRUE}
 UGRD_MAIN <- ICLM_MAIN %>% filter(Career == 'UGRD')
 PBAC_MAIN <- ICLM_MAIN %>% filter(Career == 'PBAC')
@@ -34,24 +34,24 @@ UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- colSums(UGRD_FTE_SU
 UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] <- 'TOTAL'
 
 ```
-##  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
+###  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
 ```{r Add Student College, echo=TRUE}
 UGRD_ALL_COLLEGE <- UGRD_ENROLLMENT %>% mutate(StdntCollege = (UGRD_MAIN$StdntCollege[match(UGRD_ENROLLMENT$ID,UGRD_MAIN$ID)]))
 ```
-##  Pivot Table of Enrolled Units UGRD Major/College by Course/College
+###  Pivot Table of Enrolled Units UGRD Major/College by Course/College
 ```{r Create Pivot, echo=TRUE}
 College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progress`) %>%
   group_by(StdntCollege,CrseCollege) %>% 
   summarise(TotUnits = sum(`Sum Progress`))
 ```
-##  Output of Undergraduate FTE Statistics
+###  Output of Undergraduate FTE Statistics
 ```{r Outuput1, echo=TRUE}
 kable(UGRD_FTE_SUMMARY) %>% 
-kable_styling("striped", position = "left", font_size = 12)
+kable_styling("striped", position = "left", font_size = 10)
 
 ```
-##  Output of Undergraduate College Pivot
+###  Output of Undergraduate College Pivot
 ```{r Outuput2, echo=TRUE}
 kable(College_Pivot) %>% 
-kable_styling("striped", position = "left", font_size = 12)
+kable_styling("striped", position = "left", font_size = 10)
 ```

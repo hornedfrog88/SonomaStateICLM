@@ -130,8 +130,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="initiate-the-workspace-and-import-the-two-data-sets" class="section level2">
-<h2>Initiate the Workspace and Import the Two Data Sets</h2>
+<div id="initiate-the-workspace-and-import-the-2-data-sets-from-excel-files" class="section level3">
+<h3>Initiate the Workspace and Import the 2 Data Sets from Excel Files</h3>
 <pre><code>## Warning: package 'readxl' was built under R version 3.5.1</code></pre>
 <pre><code>## Warning: package 'dplyr' was built under R version 3.5.1</code></pre>
 <pre><code>## 
@@ -145,8 +145,8 @@ $(document).ready(function () {
 <pre><code>## Warning: package 'ggplot2' was built under R version 3.5.1</code></pre>
 <pre><code>## Warning: package 'kableExtra' was built under R version 3.5.1</code></pre>
 </div>
-<div id="munge-the-data-sets" class="section level2">
-<h2>Munge the data sets</h2>
+<div id="munge-the-data-sets" class="section level3">
+<h3>Munge the data sets</h3>
 <pre class="r"><code>UGRD_MAIN &lt;- ICLM_MAIN %&gt;% filter(Career == 'UGRD')
 PBAC_MAIN &lt;- ICLM_MAIN %&gt;% filter(Career == 'PBAC')
 UGRD_ENROLLMENT &lt;- ICLM_ENROLLMENT %&gt;% filter(Career == 'UGRD')
@@ -159,21 +159,21 @@ UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] &lt;- colSums(UGRD_FTE
 #Add the TOTAL row label to the last row
 UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] &lt;- 'TOTAL'</code></pre>
 </div>
-<div id="add-the-students-major-college-from-main-student-data-frame-to-the-enrollment-data-frame" class="section level2">
-<h2>Add the Student’s Major College from Main Student Data Frame to the Enrollment Data Frame</h2>
+<div id="add-the-students-major-college-from-main-student-data-frame-to-the-enrollment-data-frame" class="section level3">
+<h3>Add the Student’s Major College from Main Student Data Frame to the Enrollment Data Frame</h3>
 <pre class="r"><code>UGRD_ALL_COLLEGE &lt;- UGRD_ENROLLMENT %&gt;% mutate(StdntCollege = (UGRD_MAIN$StdntCollege[match(UGRD_ENROLLMENT$ID,UGRD_MAIN$ID)]))</code></pre>
 </div>
-<div id="pivot-table-of-enrolled-units-ugrd-majorcollege-by-coursecollege" class="section level2">
-<h2>Pivot Table of Enrolled Units UGRD Major/College by Course/College</h2>
+<div id="pivot-table-of-enrolled-units-ugrd-majorcollege-by-coursecollege" class="section level3">
+<h3>Pivot Table of Enrolled Units UGRD Major/College by Course/College</h3>
 <pre class="r"><code>College_Pivot &lt;- UGRD_ALL_COLLEGE %&gt;% select(CrseCollege,StdntCollege,`Sum Progress`) %&gt;%
   group_by(StdntCollege,CrseCollege) %&gt;% 
   summarise(TotUnits = sum(`Sum Progress`))</code></pre>
 </div>
-<div id="output-of-undergraduate-fte-statistics" class="section level2">
-<h2>Output of Undergraduate FTE Statistics</h2>
+<div id="output-of-undergraduate-fte-statistics" class="section level3">
+<h3>Output of Undergraduate FTE Statistics</h3>
 <pre class="r"><code>kable(UGRD_FTE_SUMMARY) %&gt;% 
-kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 12)</code></pre>
-<table class="table table-striped" style="font-size: 12px; ">
+kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 10)</code></pre>
+<table class="table table-striped" style="font-size: 10px; ">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -741,11 +741,11 @@ TOTAL
 </tbody>
 </table>
 </div>
-<div id="output-of-undergraduate-college-pivot" class="section level2">
-<h2>Output of Undergraduate College Pivot</h2>
+<div id="output-of-undergraduate-college-pivot" class="section level3">
+<h3>Output of Undergraduate College Pivot</h3>
 <pre class="r"><code>kable(College_Pivot) %&gt;% 
-kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 12)</code></pre>
-<table class="table table-striped" style="font-size: 12px; ">
+kable_styling(&quot;striped&quot;, position = &quot;left&quot;, font_size = 10)</code></pre>
+<table class="table table-striped" style="font-size: 10px; ">
 <thead>
 <tr>
 <th style="text-align:left;">
