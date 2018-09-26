@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo=FALSE)
 ```
 ##  Initiate the Workspace and Import the Two Data Sets
 ```{r Initiate and Import Data, echo=FALSE}
-setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/Project")
+setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readxl)
 library(dplyr)
 library(ggplot2)
