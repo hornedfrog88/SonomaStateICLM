@@ -1,0 +1,57 @@
+---
+title: "Sonoma State University - ICLM Analysis"
+author: "Rich McGowan"
+date: "September 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+##  Initiate the Workspace and Import the Two Data Sets
+```{r Initiate and Import Data, echo=FALSE}
+setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/Project")
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+ICLM_ENROLLMENT <- read_excel("ICLM_ENROLLMENT.xlsx")
+ICLM_MAIN <- read_excel("ICLM_MAIN.xlsx")
+```
+##  Munge the data sets
+```{r Munge, echo=TRUE}
+UGRD_MAIN <- ICLM_MAIN %>% filter(Career == 'UGRD')
+PBAC_MAIN <- ICLM_MAIN %>% filter(Career == 'PBAC')
+UGRD_ENROLLMENT <- ICLM_ENROLLMENT %>% filter(Career == 'UGRD')
+PBAC_ENROLLMENT <- ICLM_ENROLLMENT %>% filter(Career == 'PBAC')
+#Calculate Undergraduate FTE Statistics
+UGRD_FTE_SUMMARY <- UGRD_MAIN %>% group_by(StdntCollege, AdmitType) %>% summarize(HeadCount = n(),TotalUnits = sum(UnitsTakenPrgrs), FTE= round(sum(UnitsTakenPrgrs)/15))
+#Sum the Numeric Columns
+myNumCols <- which(unlist(lapply(UGRD_FTE_SUMMARY,is.numeric)))
+UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- colSums(UGRD_FTE_SUMMARY[, myNumCols], na.rm=TRUE)
+#Add the TOTAL row label to the last row
+UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] <- 'TOTAL'
+
+```
+##  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
+```{r Add Student College, echo=TRUE}
+UGRD_ALL_COLLEGE <- UGRD_ENROLLMENT %>% mutate(StdntCollege = (UGRD_MAIN$StdntCollege[match(UGRD_ENROLLMENT$ID,UGRD_MAIN$ID)]))
+```
+##  Pivot Table of Enrolled Units UGRD Major/College by Course/College
+```{r Create Pivot, echo=TRUE}
+College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progress`) %>%
+  group_by(StdntCollege,CrseCollege) %>% 
+  summarise(TotUnits = sum(`Sum Progress`))
+```
+##  Output of Undergraduate FTE Statistics
+```{r Outuput1, echo=TRUE}
+kable(UGRD_FTE_SUMMARY) %>% 
+kable_styling("striped", position = "left", font_size = 12)
+
+```
+##  Output of Undergraduate College Pivot
+```{r Outuput2, echo=TRUE}
+kable(College_Pivot) %>% 
+kable_styling("striped", position = "left", font_size = 12)
+```
