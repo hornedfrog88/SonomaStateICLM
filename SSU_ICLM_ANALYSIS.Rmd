@@ -32,7 +32,7 @@ UGRD_FTE_SUMMARY <- UGRD_MAIN %>% group_by(StdntCollege, AdmitType) %>% summariz
 myNumCols <- which(unlist(lapply(UGRD_FTE_SUMMARY,is.numeric)))
 UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- data.table(colSums(UGRD_FTE_SUMMARY[, myNumCols], na.rm=TRUE))
 #Add the TOTAL row label to the last row
-UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] <- 'TOTAL'
+UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-4] <- 'TOTAL'
 
 ```
 ###  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
@@ -47,7 +47,6 @@ College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progr
 ```
 ###  Output of Undergraduate FTE Statistics
 ```{r Outuput1, echo=TRUE}
-format.data.frame(UGRD_FTE_SUMMARY)
 kable(UGRD_FTE_SUMMARY) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 
@@ -59,6 +58,7 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot Student College vs. Course College Histogram
 ```{r}
-
+ggplot(data = UGRD_FTE_SUMMARY, aes(x=StdntCollege,y=HeadCount))+
+  geom_bar(stat="identity")
 ```
 
