@@ -16,20 +16,21 @@ library(dplyr)
 library(ggplot2)
 library(knitr)
 library(kableExtra)
+library(data.table)
 ICLM_ENROLLMENT <- read_excel("ICLM_ENROLLMENT.xlsx")
 ICLM_MAIN <- read_excel("ICLM_MAIN.xlsx")
 ```
 ###  Munge the data sets
 ```{r Munge, echo=TRUE}
-UGRD_MAIN <- ICLM_MAIN %>% filter(Career == 'UGRD')
-PBAC_MAIN <- ICLM_MAIN %>% filter(Career == 'PBAC')
-UGRD_ENROLLMENT <- ICLM_ENROLLMENT %>% filter(Career == 'UGRD')
-PBAC_ENROLLMENT <- ICLM_ENROLLMENT %>% filter(Career == 'PBAC')
+UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD'))
+PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC'))
+UGRD_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'UGRD'))
+PBAC_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'PBAC'))
 #Calculate Undergraduate FTE Statistics
 UGRD_FTE_SUMMARY <- UGRD_MAIN %>% group_by(StdntCollege, AdmitType) %>% summarize(HeadCount = n(),TotalUnits = sum(UnitsTakenPrgrs), FTE= round(sum(UnitsTakenPrgrs)/15))
 #Sum the Numeric Columns
 myNumCols <- which(unlist(lapply(UGRD_FTE_SUMMARY,is.numeric)))
-UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- colSums(UGRD_FTE_SUMMARY[, myNumCols], na.rm=TRUE)
+UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- data.table(colSums(UGRD_FTE_SUMMARY[, myNumCols], na.rm=TRUE))
 #Add the TOTAL row label to the last row
 UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] <- 'TOTAL'
 
@@ -46,6 +47,7 @@ College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progr
 ```
 ###  Output of Undergraduate FTE Statistics
 ```{r Outuput1, echo=TRUE}
+format.data.frame(UGRD_FTE_SUMMARY)
 kable(UGRD_FTE_SUMMARY) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 

@@ -144,13 +144,18 @@ $(document).ready(function () {
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre><code>## Warning: package 'ggplot2' was built under R version 3.5.1</code></pre>
 <pre><code>## Warning: package 'kableExtra' was built under R version 3.5.1</code></pre>
+<pre><code>## 
+## Attaching package: 'data.table'</code></pre>
+<pre><code>## The following objects are masked from 'package:dplyr':
+## 
+##     between, first, last</code></pre>
 </div>
 <div id="munge-the-data-sets" class="section level3">
 <h3>Munge the data sets</h3>
-<pre class="r"><code>UGRD_MAIN &lt;- ICLM_MAIN %&gt;% filter(Career == 'UGRD')
-PBAC_MAIN &lt;- ICLM_MAIN %&gt;% filter(Career == 'PBAC')
-UGRD_ENROLLMENT &lt;- ICLM_ENROLLMENT %&gt;% filter(Career == 'UGRD')
-PBAC_ENROLLMENT &lt;- ICLM_ENROLLMENT %&gt;% filter(Career == 'PBAC')
+<pre class="r"><code>UGRD_MAIN &lt;- data.table(ICLM_MAIN %&gt;% filter(Career == 'UGRD'))
+PBAC_MAIN &lt;- data.table(ICLM_MAIN %&gt;% filter(Career == 'PBAC'))
+UGRD_ENROLLMENT &lt;- data.table(ICLM_ENROLLMENT %&gt;% filter(Career == 'UGRD'))
+PBAC_ENROLLMENT &lt;- data.table(ICLM_ENROLLMENT %&gt;% filter(Career == 'PBAC'))
 #Calculate Undergraduate FTE Statistics
 UGRD_FTE_SUMMARY &lt;- UGRD_MAIN %&gt;% group_by(StdntCollege, AdmitType) %&gt;% summarize(HeadCount = n(),TotalUnits = sum(UnitsTakenPrgrs), FTE= round(sum(UnitsTakenPrgrs)/15))
 #Sum the Numeric Columns
@@ -172,8 +177,8 @@ UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-3] &lt;- 'TOTA
 <div id="output-of-undergraduate-fte-statistics" class="section level3">
 <h3>Output of Undergraduate FTE Statistics</h3>
 <pre class="r"><code>kable(UGRD_FTE_SUMMARY) %&gt;% 
-kable_styling(&quot;striped&quot;, full_width = F, position = &quot;left&quot;, font_size = 10)</code></pre>
-<table class="table table-striped" style="font-size: 10px; width: auto !important; ">
+kable_styling(&quot;striped&quot;, full_width = F, position = &quot;center&quot;, font_size = 10)</code></pre>
+<table class="table table-striped" style="font-size: 10px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
