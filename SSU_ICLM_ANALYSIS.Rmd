@@ -58,7 +58,7 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot Student College vs. Course College Histogram
 ```{r}
-ggplot(data = UGRD_FTE_SUMMARY, aes(x=StdntCollege,y=HeadCount))+
+ggplot(data = UGRD_FTE_SUMMARY, aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
   geom_bar(stat="identity")
 ```
 
