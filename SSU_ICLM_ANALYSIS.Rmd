@@ -55,8 +55,18 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 kable(College_Pivot) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
-###  Plot Student College vs. Course College Histogram
+###  Plot 1 Bar Chart
 ```{r}
-ggplot(data = UGRD_FTE_SUMMARY, aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
-  geom_bar(stat="identity")
+UGRD_FTE_SUMMARY %>% ggplot(aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
+  geom_bar(stat="identity", width=0.5)+
+  theme_minimal()
 ```
+### Plot 2 - Bar Chart
+```{r}
+College_Pivot %>% ggplot(aes(x=StdntCollege,y=TotUnits,fill=CrseCollege)) +
+  geom_bar(stat="identity", width=0.75) + coord_flip() +
+  theme(legend.title = element_text(colour="blue", size=8, face="bold"))+
+  theme(legend.text = element_text(colour="blue", size = 8, face = "bold"))+
+  ylab("Total Units")+xlab("Students' Major College")
+```
+
