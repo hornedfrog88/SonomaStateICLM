@@ -4,7 +4,6 @@ author: "Rich McGowan"
 date: "September 25, 2018"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 ```
@@ -61,4 +60,3 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ggplot(data = UGRD_FTE_SUMMARY, aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
   geom_bar(stat="identity")
 ```
-
