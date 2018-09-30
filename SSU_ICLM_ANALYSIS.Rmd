@@ -10,7 +10,8 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 ```
-###  Initiate the Workspace and Import the 2 Data Sets from Excel Files  
+###  Initiate the Workspace and Import the 2 Data Sets from CSV Files
+###  Produced by CS Queries
 ```{r Initiate and Import Data, echo=FALSE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readr)
@@ -25,17 +26,18 @@ ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
 ###  Munge the data sets
 ```{r Munge, echo=TRUE}
+ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD'))
 PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC'))
 UGRD_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'UGRD'))
 PBAC_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'PBAC'))
-#Calculate Undergraduate FTE Statistics
-UGRD_FTE_SUMMARY <- UGRD_MAIN %>% group_by(StdntCollege, AdmitType) %>% summarize(HeadCount = n(),TotalUnits = sum(UnitsTakenPrgrs), FTE= round(sum(UnitsTakenPrgrs)/15))
+#Calculate Undergraduate FTE Statistics taking the 3 Year Average by dividing by 6 (regular terms)
+UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege, Major, AdmitType) %>% summarize(HeadCount = round(n()/6),TotalUnits = round(sum(UnitsTakenPrgrs)/6), FTE= round(sum(UnitsTakenPrgrs)/15)/6)
 #Sum the Numeric Columns
-myNumCols <- which(unlist(lapply(UGRD_FTE_SUMMARY,is.numeric)))
-UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY) + 1), myNumCols] <- data.table(colSums(UGRD_FTE_SUMMARY[, myNumCols], na.rm=TRUE))
+myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
+UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
 #Add the TOTAL row label to the last row
-UGRD_FTE_SUMMARY[(nrow(UGRD_FTE_SUMMARY)), ncol(UGRD_FTE_SUMMARY)-4] <- 'TOTAL'
+UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] <- 'TOTAL'
 
 ```
 ###  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
@@ -44,13 +46,13 @@ UGRD_ALL_COLLEGE <- UGRD_ENROLLMENT %>% mutate(StdntCollege = (UGRD_MAIN$StdntCo
 ```
 ###  Pivot Table of Enrolled Units UGRD Major/College by Course/College
 ```{r Create Pivot, echo=TRUE}
-College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,`Sum Progress`) %>%
+College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,UnitTakenPrgrssSixth) %>%
   group_by(StdntCollege,CrseCollege) %>% 
-  summarise(TotUnits = sum(`Sum Progress`))
+  summarise(TotUnits = sum(UnitTakenPrgrssSixth))
 ```
-###  Output of Undergraduate FTE Statistics
+###  Output of Undergraduate FTE Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
-kable(UGRD_FTE_SUMMARY) %>% 
+kable(UGRD_FTE_THREEYRAVG) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 
 ```
@@ -61,7 +63,7 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot 1 Bar Chart
 ```{r}
-UGRD_FTE_SUMMARY %>% ggplot(aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
+UGRD_FTE_THREEYRAVG %>% ggplot(aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
   geom_bar(stat="identity", width=0.5)+
   theme_minimal()
 ```
