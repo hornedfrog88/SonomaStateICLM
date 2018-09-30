@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo=FALSE)
 ```{r Initiate and Import Data, echo=FALSE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readr)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(knitr)
@@ -49,6 +50,7 @@ UGRD_ALL_COLLEGE <- UGRD_ENROLLMENT %>% mutate(StdntCollege = (UGRD_MAIN$StdntCo
 College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,UnitTakenPrgrssSixth) %>%
   group_by(StdntCollege,CrseCollege) %>% 
   summarise(TotUnits = sum(UnitTakenPrgrssSixth))
+Student_by_COllege <- College_Pivot %>% spread(StdntCollege,TotUnits)
 ```
 ###  Output of Undergraduate FTE Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
@@ -58,7 +60,7 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Output of Undergraduate College Pivot
 ```{r Outuput2, echo=TRUE}
-kable(College_Pivot) %>% 
+kable(Student_by_COllege) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot 1 Bar Chart
