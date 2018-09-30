@@ -1,0 +1,425 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Sonoma State University - ICLM Analysis},
+            pdfauthor={Rich McGowan},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Sonoma State University - ICLM Analysis}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Rich McGowan}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{September 25, 2018}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+
+\begin{document}
+\maketitle
+
+\subsubsection{Initiate the Workspace and Import the 2 Data Sets from
+Excel
+Files}\label{initiate-the-workspace-and-import-the-2-data-sets-from-excel-files}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'data.table'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:dplyr':
+## 
+##     between, first, last
+\end{verbatim}
+
+\subsubsection{Munge the data sets}\label{munge-the-data-sets}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UGRD_MAIN <-}\StringTok{ }\KeywordTok{data.table}\NormalTok{(ICLM_MAIN }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Career }\OperatorTok{==}\StringTok{ 'UGRD'}\NormalTok{))}
+\NormalTok{PBAC_MAIN <-}\StringTok{ }\KeywordTok{data.table}\NormalTok{(ICLM_MAIN }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Career }\OperatorTok{==}\StringTok{ 'PBAC'}\NormalTok{))}
+\NormalTok{UGRD_ENROLLMENT <-}\StringTok{ }\KeywordTok{data.table}\NormalTok{(ICLM_ENROLLMENT }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Career }\OperatorTok{==}\StringTok{ 'UGRD'}\NormalTok{))}
+\NormalTok{PBAC_ENROLLMENT <-}\StringTok{ }\KeywordTok{data.table}\NormalTok{(ICLM_ENROLLMENT }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(Career }\OperatorTok{==}\StringTok{ 'PBAC'}\NormalTok{))}
+\CommentTok{#Calculate Undergraduate FTE Statistics}
+\NormalTok{UGRD_FTE_SUMMARY <-}\StringTok{ }\NormalTok{UGRD_MAIN }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(StdntCollege, AdmitType) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{HeadCount =} \KeywordTok{n}\NormalTok{(),}\DataTypeTok{TotalUnits =} \KeywordTok{sum}\NormalTok{(UnitsTakenPrgrs), }\DataTypeTok{FTE=} \KeywordTok{round}\NormalTok{(}\KeywordTok{sum}\NormalTok{(UnitsTakenPrgrs)}\OperatorTok{/}\DecValTok{15}\NormalTok{))}
+\CommentTok{#Sum the Numeric Columns}
+\NormalTok{myNumCols <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(}\KeywordTok{lapply}\NormalTok{(UGRD_FTE_SUMMARY,is.numeric)))}
+\NormalTok{UGRD_FTE_SUMMARY[(}\KeywordTok{nrow}\NormalTok{(UGRD_FTE_SUMMARY) }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{), myNumCols] <-}\StringTok{ }\KeywordTok{data.table}\NormalTok{(}\KeywordTok{colSums}\NormalTok{(UGRD_FTE_SUMMARY[, myNumCols], }\DataTypeTok{na.rm=}\OtherTok{TRUE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in `[<-.data.frame`(`*tmp*`, (nrow(UGRD_FTE_SUMMARY) + 1),
+## myNumCols, : replacement element 1 has 3 rows to replace 1 rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Add the TOTAL row label to the last row}
+\NormalTok{UGRD_FTE_SUMMARY[(}\KeywordTok{nrow}\NormalTok{(UGRD_FTE_SUMMARY)), }\KeywordTok{ncol}\NormalTok{(UGRD_FTE_SUMMARY)}\OperatorTok{-}\DecValTok{4}\NormalTok{] <-}\StringTok{ 'TOTAL'}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Add the Student's Major College from Main Student Data
+Frame to the Enrollment Data
+Frame}\label{add-the-students-major-college-from-main-student-data-frame-to-the-enrollment-data-frame}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{UGRD_ALL_COLLEGE <-}\StringTok{ }\NormalTok{UGRD_ENROLLMENT }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{StdntCollege =}\NormalTok{ (UGRD_MAIN}\OperatorTok{$}\NormalTok{StdntCollege[}\KeywordTok{match}\NormalTok{(UGRD_ENROLLMENT}\OperatorTok{$}\NormalTok{ID,UGRD_MAIN}\OperatorTok{$}\NormalTok{ID)]))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Pivot Table of Enrolled Units UGRD Major/College by
+Course/College}\label{pivot-table-of-enrolled-units-ugrd-majorcollege-by-coursecollege}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{College_Pivot <-}\StringTok{ }\NormalTok{UGRD_ALL_COLLEGE }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(CrseCollege,StdntCollege,}\StringTok{`}\DataTypeTok{Sum Progress}\StringTok{`}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(StdntCollege,CrseCollege) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{TotUnits =} \KeywordTok{sum}\NormalTok{(}\StringTok{`}\DataTypeTok{Sum Progress}\StringTok{`}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Output of Undergraduate FTE
+Statistics}\label{output-of-undergraduate-fte-statistics}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(UGRD_FTE_SUMMARY) }\OperatorTok{%>%}\StringTok{ }
+\KeywordTok{kable_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{, }\DataTypeTok{full_width =}\NormalTok{ F, }\DataTypeTok{position =} \StringTok{"center"}\NormalTok{, }\DataTypeTok{font_size =} \DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{tabular}{l|l|r|r|r}
+\hline
+StdntCollege & AdmitType & HeadCount & TotalUnits & FTE\\
+\hline
+Academic Affairs & 1 & 614 & 7749 & 517\\
+\hline
+Academic Affairs & 3 & 1 & 12 & 1\\
+\hline
+Academic Affairs & 4 & 9 & 105 & 7\\
+\hline
+Academic Affairs & 5 & 228 & 1580 & 105\\
+\hline
+ARTS \& HUMANITIES & 1 & 1179 & 16297 & 1086\\
+\hline
+ARTS \& HUMANITIES & 3 & 3 & 34 & 2\\
+\hline
+ARTS \& HUMANITIES & 4 & 131 & 1717 & 114\\
+\hline
+ARTS \& HUMANITIES & 5 & 150 & 979 & 65\\
+\hline
+ARTS \& HUMANITIES & 6 & 2 & 28 & 2\\
+\hline
+BUSINESS \& ECONOMICS & 1 & 1101 & 14876 & 992\\
+\hline
+BUSINESS \& ECONOMICS & 3 & 2 & 15 & 1\\
+\hline
+BUSINESS \& ECONOMICS & 4 & 147 & 1895 & 126\\
+\hline
+BUSINESS \& ECONOMICS & 5 & 110 & 870 & 58\\
+\hline
+BUSINESS \& ECONOMICS & 6 & 2 & 32 & 2\\
+\hline
+EDUCATION & 1 & 309 & 4176 & 278\\
+\hline
+EDUCATION & 3 & 1 & 15 & 1\\
+\hline
+EDUCATION & 4 & 27 & 323 & 22\\
+\hline
+EDUCATION & 5 & 31 & 230 & 15\\
+\hline
+EDUCATION & 6 & 2 & 19 & 1\\
+\hline
+SCIENCE \& TECHNOLOGY & 1 & 1373 & 17561 & 1171\\
+\hline
+SCIENCE \& TECHNOLOGY & 2 & 1 & 9 & 1\\
+\hline
+SCIENCE \& TECHNOLOGY & 3 & 13 & 128 & 9\\
+\hline
+SCIENCE \& TECHNOLOGY & 4 & 133 & 1441 & 96\\
+\hline
+SCIENCE \& TECHNOLOGY & 5 & 225 & 1735 & 116\\
+\hline
+SOCIAL SCIENCES & 1 & 1634 & 22027 & 1468\\
+\hline
+SOCIAL SCIENCES & 3 & 8 & 73 & 5\\
+\hline
+SOCIAL SCIENCES & 4 & 214 & 2673 & 178\\
+\hline
+SOCIAL SCIENCES & 5 & 113 & 710 & 47\\
+\hline
+SOCIAL SCIENCES & 6 & 1 & 16 & 1\\
+\hline
+UNIVERSITY-WIDE & 1 & 8 & 99 & 7\\
+\hline
+UNIVERSITY-WIDE & 5 & 1 & 3 & 0\\
+\hline
+TOTAL & NA & 7773 & 7773 & 7773\\
+\hline
+\end{tabular}\endgroup{}
+\end{table}
+
+\subsubsection{Output of Undergraduate College
+Pivot}\label{output-of-undergraduate-college-pivot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(College_Pivot) }\OperatorTok{%>%}\StringTok{ }
+\KeywordTok{kable_styling}\NormalTok{(}\StringTok{"striped"}\NormalTok{, }\DataTypeTok{full_width =}\NormalTok{ F, }\DataTypeTok{position =} \StringTok{"center"}\NormalTok{, }\DataTypeTok{font_size =} \DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{tabular}{l|l|r}
+\hline
+StdntCollege & CrseCollege & TotUnits\\
+\hline
+Academic Affairs & Arts and Humanities & 2275\\
+\hline
+Academic Affairs & Business and Economics & 764\\
+\hline
+Academic Affairs & Education & 103\\
+\hline
+Academic Affairs & Science \& Technology & 2510\\
+\hline
+Academic Affairs & Social Sciences & 3661\\
+\hline
+Academic Affairs & University-wide & 122\\
+\hline
+ARTS \& HUMANITIES & Arts and Humanities & 11957\\
+\hline
+ARTS \& HUMANITIES & Business and Economics & 360\\
+\hline
+ARTS \& HUMANITIES & Education & 841\\
+\hline
+ARTS \& HUMANITIES & Extended Education & 210\\
+\hline
+ARTS \& HUMANITIES & Science \& Technology & 2205\\
+\hline
+ARTS \& HUMANITIES & Social Sciences & 3034\\
+\hline
+ARTS \& HUMANITIES & University-wide & 448\\
+\hline
+BUSINESS \& ECONOMICS & Arts and Humanities & 1964\\
+\hline
+BUSINESS \& ECONOMICS & Business and Economics & 11288\\
+\hline
+BUSINESS \& ECONOMICS & Education & 87\\
+\hline
+BUSINESS \& ECONOMICS & Science \& Technology & 1581\\
+\hline
+BUSINESS \& ECONOMICS & Social Sciences & 2280\\
+\hline
+BUSINESS \& ECONOMICS & University-wide & 294\\
+\hline
+EDUCATION & Arts and Humanities & 610\\
+\hline
+EDUCATION & Business and Economics & 40\\
+\hline
+EDUCATION & Education & 2520\\
+\hline
+EDUCATION & Science \& Technology & 431\\
+\hline
+EDUCATION & Social Sciences & 821\\
+\hline
+EDUCATION & University-wide & 105\\
+\hline
+SCIENCE \& TECHNOLOGY & Arts and Humanities & 2409\\
+\hline
+SCIENCE \& TECHNOLOGY & Business and Economics & 366\\
+\hline
+SCIENCE \& TECHNOLOGY & Education & 132\\
+\hline
+SCIENCE \& TECHNOLOGY & Science \& Technology & 13803\\
+\hline
+SCIENCE \& TECHNOLOGY & Social Sciences & 3347\\
+\hline
+SCIENCE \& TECHNOLOGY & University-wide & 241\\
+\hline
+SOCIAL SCIENCES & Arts and Humanities & 3202\\
+\hline
+SOCIAL SCIENCES & Business and Economics & 396\\
+\hline
+SOCIAL SCIENCES & Education & 248\\
+\hline
+SOCIAL SCIENCES & Science \& Technology & 2168\\
+\hline
+SOCIAL SCIENCES & Social Sciences & 17753\\
+\hline
+SOCIAL SCIENCES & University-wide & 405\\
+\hline
+UNIVERSITY-WIDE & Arts and Humanities & 19\\
+\hline
+UNIVERSITY-WIDE & Science \& Technology & 7\\
+\hline
+UNIVERSITY-WIDE & Social Sciences & 11\\
+\hline
+NA & Arts and Humanities & 16\\
+\hline
+NA & Business and Economics & 12\\
+\hline
+NA & Science \& Technology & 8\\
+\hline
+NA & Social Sciences & 41\\
+\hline
+\end{tabular}\endgroup{}
+\end{table}
+
+\subsubsection{Plot 1 Bar Chart}\label{plot-1-bar-chart}
+
+\includegraphics{SSU_ICLM_ANALYSIS_files/figure-latex/unnamed-chunk-1-1.pdf}
+\#\#\# Plot 2 - Bar Chart
+\includegraphics{SSU_ICLM_ANALYSIS_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+
+\end{document}

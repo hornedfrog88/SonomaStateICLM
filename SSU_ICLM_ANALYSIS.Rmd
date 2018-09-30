@@ -2,7 +2,10 @@
 title: "Sonoma State University - ICLM Analysis"
 author: "Rich McGowan"
 date: "September 25, 2018"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
@@ -10,14 +13,15 @@ knitr::opts_chunk$set(echo=FALSE)
 ###  Initiate the Workspace and Import the 2 Data Sets from Excel Files  
 ```{r Initiate and Import Data, echo=FALSE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
-library(readxl)
+library(readr)
 library(dplyr)
 library(ggplot2)
 library(knitr)
 library(kableExtra)
 library(data.table)
-ICLM_ENROLLMENT <- read_excel("ICLM_ENROLLMENT.xlsx")
-ICLM_MAIN <- read_excel("ICLM_MAIN.xlsx")
+library(tinytex)
+ICLM_ENROLLMENT <- read_csv("ICLM_ENROLLMENT.csv", col_names = TRUE)
+ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
 ###  Munge the data sets
 ```{r Munge, echo=TRUE}
