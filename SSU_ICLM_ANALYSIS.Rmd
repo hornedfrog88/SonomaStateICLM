@@ -1,7 +1,7 @@
 ---
-title: "Sonoma State University - ICLM Analysis"
+title: "Sonoma State University - ICLM Analysis (Data from 6 Regular Terms)"
 author: "Rich McGowan"
-date: "September 25, 2018"
+date: "November 25, 2018"
 output:
   html_document: default
   pdf_document: default
@@ -17,50 +17,42 @@ setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readr)
 library(tidyr)
 library(dplyr)
+library(reshape2)
 library(ggplot2)
 library(knitr)
 library(kableExtra)
 library(data.table)
 library(tinytex)
-ICLM_ENROLLMENT <- read_csv("ICLM_ENROLLMENT.csv", col_names = TRUE)
+#Read in the CSV data produced from Campus SOlutions Query and saved in local folder
 ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
 ###  Munge the data sets
 ```{r Munge, echo=TRUE}
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
-UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD'))
-PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC'))
-UGRD_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'UGRD'))
-PBAC_ENROLLMENT <- data.table(ICLM_ENROLLMENT %>% filter(Career == 'PBAC'))
+UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
+PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
 #Calculate Undergraduate FTE Statistics taking the 3 Year Average by dividing by 6 (regular terms)
-UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege, Major, AdmitType) %>% summarize(HeadCount = round(n()/6),TotalUnits = round(sum(UnitsTakenPrgrs)/6), FTE= round(sum(UnitsTakenPrgrs)/15)/6)
+UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/6)
 #Sum the Numeric Columns
-myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
-UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
+#myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
+#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
 #Add the TOTAL row label to the last row
-UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] <- 'TOTAL'
+#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] <- 'TOTAL'
 
 ```
-###  Add the Student's Major College from Main Student Data Frame to the Enrollment Data Frame
-```{r Add Student College, echo=TRUE}
-UGRD_ALL_COLLEGE <- UGRD_ENROLLMENT %>% mutate(StdntCollege = (UGRD_MAIN$StdntCollege[match(UGRD_ENROLLMENT$ID,UGRD_MAIN$ID)]))
-```
-###  Pivot Table of Enrolled Units UGRD Major/College by Course/College
+###  Pivot Table of FTES UGRD College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
-College_Pivot <- UGRD_ALL_COLLEGE %>% select(CrseCollege,StdntCollege,UnitTakenPrgrssSixth) %>%
-  group_by(StdntCollege,CrseCollege) %>% 
-  summarise(TotUnits = sum(UnitTakenPrgrssSixth))
-Student_by_COllege <- College_Pivot %>% spread(StdntCollege,TotUnits)
+Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
 ```
 ###  Output of Undergraduate FTE Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
-kable(UGRD_FTE_THREEYRAVG) %>% 
+kable(Major_Course_College_Pivot) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 
 ```
 ###  Output of Undergraduate College Pivot
 ```{r Outuput2, echo=TRUE}
-kable(Student_by_COllege) %>% 
+kable(College_Pivot) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot 1 Bar Chart
