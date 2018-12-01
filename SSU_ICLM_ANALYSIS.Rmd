@@ -44,7 +44,7 @@ UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>
 ```{r Create Pivot, echo=TRUE}
 # Transform the Row Values of Course College to Column Values for the Data Frame
 Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
-
+Major_Course_College_Pivot$`Extended Education` <- NULL
 #Subtotal FTES by College
 Subtotals_by_College <- aggregate(cbind(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)~StdntCollege,data = Major_Course_College_Pivot,FUN = "sum")
 #Add "TOTAL" to the row label
@@ -52,10 +52,17 @@ for (i in 1:7) {
     Subtotals_by_College$StdntCollege[i] <-      paste(Subtotals_by_College$StdntCollege[i]," TOTAL")
 }
 Subtotals_by_College[,"Major"] <- " "
-Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,`Arts and Humanities`,`Business and Economics`,`Extended Education`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)
-rbind(Subtotals_by_College[1,],Major_Course_College_Pivot[3,])
+Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)
 
 ```
+###  Add the Student College FTES Subtotals to the Data Frame
+```{r Add Subtotals, echo=TRUE}
+
+#Insert (bind_rows) the Subtotals into the Major_Course_College_Pivot data frame
+
+bind_rows(Major_Course_College_Pivot[3,],Subtotals_by_College[1,])
+```
+
 
 ###  Output of FTES UGRD Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
