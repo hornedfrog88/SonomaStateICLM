@@ -42,18 +42,18 @@ UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>
 ```
 ###  Pivot Table of FTES UGRD College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
+# Transform the Row Values of Course College to Column Values for the Data Frame
 Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
 
-Major_Course_College_Pivot %>% summarise(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`) %>% group_by(StdntCollege)
 #Subtotal FTES by College
 Subtotals_by_College <- aggregate(cbind(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)~StdntCollege,data = Major_Course_College_Pivot,FUN = "sum")
-Subtotals_by_College$StdntCollege[1] <- "Academic Affairs Total"
-Subtotals_by_College$StdntCollege[2] <- "ARTS & HUMANITIES TOTAL"
-Subtotals_by_College$StdntCollege[3] <- "BUSINESS & ECONOMICS TOTAL"
-Subtotals_by_College$StdntCollege[4] <- "EDUCATION TOTAL"
-Subtotals_by_College$StdntCollege[5] <- "SCIENCE & TECHNOLOGY TOTAL"
-Subtotals_by_College$StdntCollege[6] <- "SOCIAL SCIENCES TOTAL"
-Subtotals_by_College$StdntCollege[7] <- "UNIVERSITYWIDE TOTAL"
+#Add "TOTAL" to the row label
+for (i in 1:7) {
+    Subtotals_by_College$StdntCollege[i] <-      paste(Subtotals_by_College$StdntCollege[i]," TOTAL")
+}
+Subtotals_by_College[,"Major"] <- " "
+Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,`Arts and Humanities`,`Business and Economics`,`Extended Education`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)
+rbind(Subtotals_by_College[1,],Major_Course_College_Pivot[3,])
 
 ```
 
