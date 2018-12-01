@@ -46,7 +46,14 @@ Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~Crse
 
 Major_Course_College_Pivot %>% summarise(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`) %>% group_by(StdntCollege)
 #Subtotal FTES by College
-aggregate(cbind(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)~StdntCollege,data = Major_Course_College_Pivot,FUN = "sum")
+Subtotals_by_College <- aggregate(cbind(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)~StdntCollege,data = Major_Course_College_Pivot,FUN = "sum")
+Subtotals_by_College$StdntCollege[1] <- "Academic Affairs Total"
+Subtotals_by_College$StdntCollege[2] <- "ARTS & HUMANITIES TOTAL"
+Subtotals_by_College$StdntCollege[3] <- "BUSINESS & ECONOMICS TOTAL"
+Subtotals_by_College$StdntCollege[4] <- "EDUCATION TOTAL"
+Subtotals_by_College$StdntCollege[5] <- "SCIENCE & TECHNOLOGY TOTAL"
+Subtotals_by_College$StdntCollege[6] <- "SOCIAL SCIENCES TOTAL"
+Subtotals_by_College$StdntCollege[7] <- "UNIVERSITYWIDE TOTAL"
 
 ```
 
