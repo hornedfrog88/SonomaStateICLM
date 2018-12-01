@@ -43,7 +43,11 @@ UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>
 ###  Pivot Table of FTES UGRD College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
 Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
-Major_Course_College_Pivot %>% group_by(StdntCollege,Major) %>% summarise(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)
+
+Major_Course_College_Pivot %>% summarise(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`) %>% group_by(StdntCollege)
+#Subtotal FTES by College
+aggregate(cbind(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)~StdntCollege,data = Major_Course_College_Pivot,FUN = "sum")
+
 ```
 
 ###  Output of FTES UGRD Statistics (Average of 3 Years)
