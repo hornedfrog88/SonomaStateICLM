@@ -34,10 +34,11 @@ PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss >
 #Calculate Undergraduate FTES taking the Average based on the distinct number of terms in the dataframe (e.g. summing the Units Taken Profgressby dividing by 6 regular terms gives a 3 year average)
 numterms <- as.integer(count(distinct(UGRD_MAIN,Term)))
 UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
+
 #Group the UGRD_MAIN data frame so that average headcount can be calculated
 headcountdf <- distinct(UGRD_MAIN,ID,StdntCollege,Major,Term) %>% group_by(StdntCollege,Major) %>% count(ID)
 headcountdf <- headcountdf %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,Major,hcavg)
-headcountdf <- headcountdf %>% group_by(StdntCollege,Major) %>% summarize(n())
+headcountdf <- headcountdf %>% group_by(StdntCollege,Major) %>% summarize(sum(hcavg))
 names(headcountdf)[3] <- "HeadCount"
 ```
 
