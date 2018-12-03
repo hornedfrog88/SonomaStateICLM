@@ -38,6 +38,7 @@ UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>
 headcountdf <- distinct(UGRD_MAIN,ID,StdntCollege,Major,Term) %>% group_by(StdntCollege,Major) %>% count(ID)
 headcountdf <- headcountdf %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,Major,hcavg)
 headcountdf <- headcountdf %>% group_by(StdntCollege,Major) %>% summarize(n())
+names(headcountdf)[3] <- "HeadCount"
 ```
 
 ###  Pivot Table of FTES UGRD College/Major by Course/College
@@ -54,6 +55,15 @@ Major_Course_College_Pivot$`Science & Technology`[which(is.na(Major_Course_Colle
 Major_Course_College_Pivot$`Social Sciences`[which(is.na(Major_Course_College_Pivot$`Social Sciences`))] <- 0
 Major_Course_College_Pivot$`University-wide`[which(is.na(Major_Course_College_Pivot$`University-wide`))] <- 0
 ```
+### Add HeadCount to the Major_Course_College data frame
+```{r Add HeadCount, ECHO=TRUE}
+Major_Course_College_Pivot <- bind_cols(headcountdf,Major_Course_College_Pivot) 
+#Drop the superfluous Columns from the data frame
+Major_Course_College_Pivot$StdntCollege1 <- NULL
+Major_Course_College_Pivot$Major1 <- NULL
+
+```
+
 
 ### Write the Resulting Data Frame Out to a CSV file
 ```{r Output Dataframe, ECHO=TRUE}
