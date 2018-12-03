@@ -32,11 +32,14 @@ ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
 PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
 #Calculate Undergraduate FTES taking the Average based on the distinct number of terms in the dataframe (e.g. summing the Units Taken Profgressby dividing by 6 regular terms gives a 3 year average)
-numterms <- count(distinct(UGRD_MAIN,Term))
+numterms <- as.integer(count(distinct(UGRD_MAIN,Term)))
 UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
-
-distinct(UGRD_MAIN,ID,StdntCollege,Major,Term)
+#Group the UGRD_MAIN data frame so that average headcount can be calculated
+headcountdf <- distinct(UGRD_MAIN,ID,StdntCollege,Major,Term) %>% group_by(StdntCollege,Major) %>% count(ID)
+headcountdf <- headcountdf %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,Major,hcavg)
+headcountdf <- headcountdf %>% group_by(StdntCollege,Major) %>% summarize(n())
 ```
+
 ###  Pivot Table of FTES UGRD College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
 # Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
