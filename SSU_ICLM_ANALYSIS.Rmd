@@ -1,7 +1,7 @@
 ---
-title: "Sonoma State University - ICLM Analysis (Data from 6 Regular Terms)"
+title: "Sonoma State University - ICLM Analysis"
 author: "Rich McGowan"
-date: "November 25, 2018"
+date: "December 3, 2018"
 output:
   html_document: default
   pdf_document: default
@@ -22,7 +22,7 @@ library(ggplot2)
 library(knitr)
 library(kableExtra)
 library(tinytex)
-#Read in the CSV data produced from Campus SOlutions Query and saved in local folder
+#Read in the CSV data produced from Campus Solutions Query and saved in local folder
 ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
 ###  Munge the data sets
@@ -30,17 +30,20 @@ ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.frame(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
 PBAC_MAIN <- data.frame(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
-#Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
+#Calculate the number of terms in UGRD_MAIN*it would be the same number for PBAC_MAIN*
 numterms <- as.integer(count(distinct(UGRD_MAIN,Term)))
+```
+### Calculate the FTES by Student College/Major and Course College
+```{r Sum FTES Numbers, echo=TRUE}
+#Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
 UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
-
 #Group the UGRD_MAIN data frame so that average headcount can be calculated
 headcountdf <- distinct(UGRD_MAIN,ID,StdntCollege,Major,Term) %>% group_by(StdntCollege,Major) %>% count(ID)
 headcountdf <- headcountdf %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,Major,hcavg)
 headcountdf <- headcountdf %>% group_by(StdntCollege,Major) %>% summarize(sum(hcavg))
 names(headcountdf)[3] <- "HeadCount"
 ```
-###  Pivot Table of FTES UGRD College/Major by Course/College
+###  Transform the Data Frame into UGRD FTES by Student College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
 # Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
 Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
@@ -50,7 +53,7 @@ Major_Course_College_Pivot$`Extended Education` <- NULL
 Major_Course_College_Pivot[is.na(Major_Course_College_Pivot)]=0
 
 ```
-### Add HeadCount to the Major_Course_College data frame
+### Add HeadCount to the Major_Course_College_Pivot data frame
 ```{r Add HeadCount, ECHO=TRUE}
 Major_Course_College_Pivot <- bind_cols(headcountdf,Major_Course_College_Pivot) 
 #Drop the superfluous Columns from the data frame
@@ -58,62 +61,48 @@ Major_Course_College_Pivot$StdntCollege1 <- NULL
 Major_Course_College_Pivot$Major1 <- NULL
 
 ```
-
 ### Write the Resulting Data Frame Out to a CSV file
 ```{r Output Dataframe, ECHO=TRUE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
 ```
-
-
-
-#Sum the Numeric Columns
-#myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
-#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
-#Add the TOTAL row label to the last row
-#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] #<- 'TOTAL'
-
-#Subtotal FTES by College
-Subtotals_by_College <- aggregate(cbind(Major_Course_College_Pivot$`Arts and Humanities`,Major_Course_College_Pivot$`Business and Economics`,Major_Course_College_Pivot$Education,Major_Course_College_Pivot$`Science & Technology`,Major_Course_College_Pivot$`Social Sciences`,Major_Course_College_Pivot$`University-wide`),by=list(StdntCollege=Major_Course_College_Pivot$StdntCollege), FUN=sum)
+### Calculate the FTES by Student College/Enrollment Status and Course College
+```{r Sum FTES Numbers 2, echo=TRUE}
+#Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
+UGRD_FTE_THREEYRAVG2 <- UGRD_MAIN %>% group_by(StdntCollege,AdmitType,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
+#Group the UGRD_MAIN data frame so that average headcount can be calculated
+headcountdf2 <- distinct(UGRD_MAIN,ID,StdntCollege,AdmitType,Term) %>% group_by(StdntCollege,AdmitType) %>% count(ID)
+headcountdf2 <- headcountdf2 %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,AdmitType,hcavg)
+headcountdf2 <- headcountdf2 %>% group_by(StdntCollege,AdmitType) %>% summarize(sum(hcavg))
+names(headcountdf2)[3] <- "HeadCount"
 ```
-#Rename the Column and Row Names Appropriately
-```{r Cleanup Column and Row Names, echo=TRUE}
-for (i in 2:7) {
-names(Subtotals_by_College)[i] <- names(Major_Course_College_Pivot)[i+1]
-}
-
-#Add "TOTAL" to the row label for sub totals
-for (i in 1:7) {
-    Subtotals_by_College$StdntCollege[i] <-      paste(Subtotals_by_College$StdntCollege[i]," TOTAL")
-}
-Subtotals_by_College[,"Major"] <- " "
-Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,names(Subtotals_by_College)[2:7])
+###  Transform the Data Frame into UGRD FTES by Student College/Enrollment Status by Course/College
+```{r Create Pivot2, echo=TRUE}
+# Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
+Enrollment_Status_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG2, StdntCollege+AdmitType~CrseCollege)
+# Remove the Extended Education CrseCollege Column from the data frame
+Enrollment_Status_Course_College_Pivot$`Extended Education` <- NULL
+# Replace the NA FTES values with zeros
+Enrollment_Status_Course_College_Pivot[is.na(Enrollment_Status_Course_College_Pivot)]=0
 
 ```
-
-###  Add the Student College FTES Subtotals to the Data Frame
-```{r Add Subtotals, echo=TRUE}
-#Find the Row Index of When the StdntCollege Changes
-indexes <- which(Major_Course_College_Pivot$StdntCollege != lag(Major_Course_College_Pivot$StdntCollege))
-#Loop and Re_Build the Major Course College Pivot with Subtotals
-counter <- 1
-Major_Course_College_Pivot_New <- data.frame(Major_Course_College_Pivot)
-Major_Course_College_Pivot_New[,1:8] <- ""
-
-for (j in 1:length(indexes)) {
-  
-  for (k in counter:indexes[j]) {
-    df <- Major_Course_College_Pivot[counter:indexes[k]-1,]
-    df2 <- Subtotals_by_College[j,]
-    test_df <- rbind(df,df2)
-    counter <- k
-  }
-  
-  Major_Course_College_Pivot_New <- rbind(test_df,Major_Course_College_Pivot_New)
-}
-
+### Add HeadCount to the Enrollment_Status_Course_College_Pivot data frame
+```{r Add HeadCount, ECHO=TRUE}
+Enrollment_Status_Course_College_Pivot <- bind_cols(headcountdf2,Enrollment_Status_Course_College_Pivot) 
+#Drop the superfluous Columns from the data frame
+Enrollment_Status_Course_College_Pivot$StdntCollege1 <- NULL
+Enrollment_Status_Course_College_Pivot$AdmitType1 <- NULL
 
 ```
+### Write the Resulting Data Frames Out to a CSV file
+```{r Output Dataframe, ECHO=TRUE}
+setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
+write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
+write.csv(Enrollment_Status_Course_College_Pivot,file = "Enrollment_Status_Course_College_Pivot.csv")
+
+```
+
+
 
 ###  Output of FTES UGRD Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
@@ -123,7 +112,7 @@ kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Output of Undergraduate College Pivot
 ```{r Outuput2, echo=TRUE}
-kable(College_Pivot) %>% 
+kable(Major_Course_College_Pivot) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
 ###  Plot 1 Bar Chart
