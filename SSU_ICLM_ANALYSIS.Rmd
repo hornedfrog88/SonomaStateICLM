@@ -33,18 +33,15 @@ UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss >
 PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
 #Calculate Undergraduate FTE Statistics taking the 3 Year Average by dividing by 6 (regular terms)
 UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/6)
-#Sum the Numeric Columns
-#myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
-#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
-#Add the TOTAL row label to the last row
-#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] <- 'TOTAL'
 
+distinct(UGRD_MAIN,ID,StdntCollege,Major,Term)
 ```
 ###  Pivot Table of FTES UGRD College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
-# Transform the Row Values of Course College to Column Values for the Data Frame
+# Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
 Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
 Major_Course_College_Pivot$`Extended Education` <- NULL
+
 # Replace the NA FTES values with zeros
 Major_Course_College_Pivot$`Arts and Humanities`[which(is.na(Major_Course_College_Pivot$`Arts and Humanities`))] <- 0
 Major_Course_College_Pivot$`Business and Economics`[which(is.na(Major_Course_College_Pivot$`Business and Economics`))] <- 0
@@ -52,29 +49,63 @@ Major_Course_College_Pivot$Education[which(is.na(Major_Course_College_Pivot$Educ
 Major_Course_College_Pivot$`Science & Technology`[which(is.na(Major_Course_College_Pivot$`Science & Technology`))] <- 0
 Major_Course_College_Pivot$`Social Sciences`[which(is.na(Major_Course_College_Pivot$`Social Sciences`))] <- 0
 Major_Course_College_Pivot$`University-wide`[which(is.na(Major_Course_College_Pivot$`University-wide`))] <- 0
+```
 
-test <- Major_Course_College_Pivot %>% group_by(StdntCollege) %>% summarise(sum(`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`))
+### Write the Resulting Data Frame Out to a CSV file
+```{r Output Dataframe, ECHO=TRUE}
+setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
+write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
+```
+
+
+
+#Sum the Numeric Columns
+#myNumCols <- which(unlist(lapply(UGRD_FTE_THREEYRAVG,is.numeric)))
+#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG) + 1), myNumCols] <- colSums(round(UGRD_FTE_THREEYRAVG[, myNumCols]), na.rm=TRUE)
+#Add the TOTAL row label to the last row
+#UGRD_FTE_THREEYRAVG[(nrow(UGRD_FTE_THREEYRAVG)), ncol(UGRD_FTE_THREEYRAVG)-4] #<- 'TOTAL'
 
 #Subtotal FTES by College
 Subtotals_by_College <- aggregate(cbind(Major_Course_College_Pivot$`Arts and Humanities`,Major_Course_College_Pivot$`Business and Economics`,Major_Course_College_Pivot$Education,Major_Course_College_Pivot$`Science & Technology`,Major_Course_College_Pivot$`Social Sciences`,Major_Course_College_Pivot$`University-wide`),by=list(StdntCollege=Major_Course_College_Pivot$StdntCollege), FUN=sum)
+```
+#Rename the Column and Row Names Appropriately
+```{r Cleanup Column and Row Names, echo=TRUE}
+for (i in 2:7) {
+names(Subtotals_by_College)[i] <- names(Major_Course_College_Pivot)[i+1]
+}
 
-#Add "TOTAL" to the row label
+#Add "TOTAL" to the row label for sub totals
 for (i in 1:7) {
     Subtotals_by_College$StdntCollege[i] <-      paste(Subtotals_by_College$StdntCollege[i]," TOTAL")
 }
 Subtotals_by_College[,"Major"] <- " "
-Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,`Arts and Humanities`,`Business and Economics`,Education,`Science & Technology`,`Social Sciences`,`University-wide`)
+Subtotals_by_College <- Subtotals_by_College %>% select(StdntCollege,Major,names(Subtotals_by_College)[2:7])
 
 ```
+
 ###  Add the Student College FTES Subtotals to the Data Frame
 ```{r Add Subtotals, echo=TRUE}
-#Insert the Subtotals into the Major_Course_College_Pivot data frame
-Major_Course_College_Pivot[4,]<- Subtotals_by_College[1,]
+#Find the Row Index of When the StdntCollege Changes
+indexes <- which(Major_Course_College_Pivot$StdntCollege != lag(Major_Course_College_Pivot$StdntCollege))
+#Loop and Re_Build the Major Course College Pivot with Subtotals
+counter <- 1
+Major_Course_College_Pivot_New <- data.frame(Major_Course_College_Pivot)
+Major_Course_College_Pivot_New[,1:8] <- ""
+
+for (j in 1:length(indexes)) {
+  
+  for (k in counter:indexes[j]) {
+    df <- Major_Course_College_Pivot[counter:indexes[k]-1,]
+    df2 <- Subtotals_by_College[j,]
+    test_df <- rbind(df,df2)
+    counter <- k
+  }
+  
+  Major_Course_College_Pivot_New <- rbind(test_df,Major_Course_College_Pivot_New)
+}
+
 
 ```
-
-
-
 
 ###  Output of FTES UGRD Statistics (Average of 3 Years)
 ```{r Outuput1, echo=TRUE}
