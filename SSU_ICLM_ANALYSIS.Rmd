@@ -31,8 +31,9 @@ ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
 PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
-#Calculate Undergraduate FTE Statistics taking the 3 Year Average by dividing by 6 (regular terms)
-UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/6)
+#Calculate Undergraduate FTES taking the Average based on the distinct number of terms in the dataframe (e.g. summing the Units Taken Profgressby dividing by 6 regular terms gives a 3 year average)
+numterms <- count(distinct(UGRD_MAIN,Term))
+UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
 
 distinct(UGRD_MAIN,ID,StdntCollege,Major,Term)
 ```
