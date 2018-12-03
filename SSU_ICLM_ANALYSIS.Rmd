@@ -21,7 +21,6 @@ library(reshape2)
 library(ggplot2)
 library(knitr)
 library(kableExtra)
-library(data.table)
 library(tinytex)
 #Read in the CSV data produced from Campus SOlutions Query and saved in local folder
 ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
@@ -31,7 +30,7 @@ ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
 PBAC_MAIN <- data.table(ICLM_MAIN %>% filter(Career == 'PBAC',UnitsTakenPrgrss > 0))
-#Calculate Undergraduate FTES taking the Average based on the distinct number of terms in the dataframe (e.g. summing the Units Taken Profgressby dividing by 6 regular terms gives a 3 year average)
+#Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
 numterms <- as.integer(count(distinct(UGRD_MAIN,Term)))
 UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
 
@@ -49,12 +48,12 @@ Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~Crse
 Major_Course_College_Pivot$`Extended Education` <- NULL
 
 # Replace the NA FTES values with zeros
-Major_Course_College_Pivot$`Arts and Humanities`[which(is.na(Major_Course_College_Pivot$`Arts and Humanities`))] <- 0
-Major_Course_College_Pivot$`Business and Economics`[which(is.na(Major_Course_College_Pivot$`Business and Economics`))] <- 0
-Major_Course_College_Pivot$Education[which(is.na(Major_Course_College_Pivot$Education))] <- 0
-Major_Course_College_Pivot$`Science & Technology`[which(is.na(Major_Course_College_Pivot$`Science & Technology`))] <- 0
-Major_Course_College_Pivot$`Social Sciences`[which(is.na(Major_Course_College_Pivot$`Social Sciences`))] <- 0
-Major_Course_College_Pivot$`University-wide`[which(is.na(Major_Course_College_Pivot$`University-wide`))] <- 0
+#Major_Course_College_Pivot$`Arts and Humanities`[which(is.na(Major_Course_College_Pivot$`Arts and Humanities`))] <- 0
+#Major_Course_College_Pivot$`Business and Economics`[which(is.na(Major_Course_College_Pivot$`Business and Economics`))] <- 0
+#Major_Course_College_Pivot$Education[which(is.na(Major_Course_College_Pivot$Education))] <- 0
+#Major_Course_College_Pivot$`Science & Technology`[which(is.na(Major_Course_College_Pivot$`Science & Technology`))] <- 0
+#Major_Course_College_Pivot$`Social Sciences`[which(is.na(Major_Course_College_Pivot$`Social Sciences`))] <- 0
+#Major_Course_College_Pivot$`University-wide`[which(is.na(Major_Course_College_Pivot$`University-wide`))] <- 0
 ```
 ### Add HeadCount to the Major_Course_College data frame
 ```{r Add HeadCount, ECHO=TRUE}
@@ -64,7 +63,6 @@ Major_Course_College_Pivot$StdntCollege1 <- NULL
 Major_Course_College_Pivot$Major1 <- NULL
 
 ```
-
 
 ### Write the Resulting Data Frame Out to a CSV file
 ```{r Output Dataframe, ECHO=TRUE}
