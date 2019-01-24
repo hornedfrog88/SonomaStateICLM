@@ -25,7 +25,7 @@ library(tinytex)
 #Read in the CSV data produced from Campus Solutions Query and saved in local folder
 ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
-###  Munge the data sets
+###  Filter the data set into UGRD and PBAC data frames
 ```{r Munge, echo=TRUE}
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.frame(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
@@ -97,7 +97,7 @@ Enrollment_Status_Course_College_Pivot$AdmitType1 <- NULL
 ### Write the Resulting Data Frames Out to a CSV file
 ```{r Output Dataframe, ECHO=TRUE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
-write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
+#write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
 write.csv(Enrollment_Status_Course_College_Pivot,file = "Enrollment_Status_Course_College_Pivot.csv")
 
 ```
