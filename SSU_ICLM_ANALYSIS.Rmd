@@ -1,7 +1,7 @@
 ---
 title: "Sonoma State University - ICLM Analysis"
 author: "Rich McGowan"
-date: "December 3, 2018"
+date: "January 25, 2019"
 output:
   html_document: default
   pdf_document: default
@@ -10,8 +10,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 ```
-###  Initiate the Workspace and Import the 2 Data Sets from CSV Files
-###  Produced by a CS Query
+###  Initiate the Workspace and Import the ICLM Data Set from a csv file (generated from a CS Query)
 ```{r Initiate and Import Data, echo=FALSE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 library(readr)
@@ -25,7 +24,7 @@ library(tinytex)
 #Read in the CSV data produced from Campus Solutions Query and saved in local folder
 ICLM_MAIN <- read_csv("ICLM_MAIN.csv",col_names = TRUE)
 ```
-###  Filter the data set into UGRD and PBAC data frames
+###  Filter the data set into separate UGRD and PBAC data frames
 ```{r Munge, echo=TRUE}
 ICLM_MAIN$AdmitType <- factor(ICLM_MAIN$AdmitType)
 UGRD_MAIN <- data.frame(ICLM_MAIN %>% filter(Career == 'UGRD',UnitsTakenPrgrss > 0))
@@ -36,7 +35,7 @@ numterms <- as.integer(count(distinct(UGRD_MAIN,Term)))
 ### Calculate the FTES by Student College/Major and Course College
 ```{r Sum FTES Numbers, echo=TRUE}
 #Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
-UGRD_FTE_THREEYRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
+UGRD_FTE_YRAVG <- UGRD_MAIN %>% group_by(StdntCollege,Major,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
 #Group the UGRD_MAIN data frame so that average headcount can be calculated
 headcountdf <- distinct(UGRD_MAIN,ID,StdntCollege,Major,Term) %>% group_by(StdntCollege,Major) %>% count(ID)
 headcountdf <- headcountdf %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,Major,hcavg)
@@ -46,7 +45,7 @@ names(headcountdf)[3] <- "HeadCount"
 ###  Transform the Data Frame into UGRD FTES by Student College/Major by Course/College
 ```{r Create Pivot, echo=TRUE}
 # Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
-Major_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG, StdntCollege+Major~CrseCollege)
+Major_Course_College_Pivot <- dcast(UGRD_FTE_YRAVG, StdntCollege+Major~CrseCollege)
 # Remove the Extended Education CrseCollege Column from the data frame
 Major_Course_College_Pivot$`Extended Education` <- NULL
 # Replace the NA FTES values with zeros
@@ -54,32 +53,27 @@ Major_Course_College_Pivot[is.na(Major_Course_College_Pivot)]=0
 
 ```
 ### Add HeadCount to the Major_Course_College_Pivot data frame
-```{r Add HeadCount, ECHO=TRUE}
+```{r Add HeadCount, echo=TRUE}
 Major_Course_College_Pivot <- bind_cols(headcountdf,Major_Course_College_Pivot) 
 #Drop the superfluous Columns from the data frame
 Major_Course_College_Pivot$StdntCollege1 <- NULL
 Major_Course_College_Pivot$Major1 <- NULL
 
 ```
-### Write the Resulting Data Frame Out to a CSV file
-```{r Output Dataframe, ECHO=TRUE}
-setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
-write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
-```
 ### Calculate the FTES by Student College/Enrollment Status and Course College
 ```{r Sum FTES Numbers 2, echo=TRUE}
 #Calculate Undergraduate Average FTES based on the distinct total number of terms in the data frame (e.g. summing the Units Taken Profgress dividing by 15 then dividing by 7 regular terms-Fall 2015 thru Fall 2018-gives a 3 year average)
-UGRD_FTE_THREEYRAVG2 <- UGRD_MAIN %>% group_by(StdntCollege,AdmitType,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
+UGRD_FTE_YRAVG2 <- UGRD_MAIN %>% group_by(StdntCollege,AdmitType,CrseCollege) %>% summarize(FTES= round(sum(UnitsTakenPrgrss)/15)/numterms)
 #Group the UGRD_MAIN data frame so that average headcount can be calculated
 headcountdf2 <- distinct(UGRD_MAIN,ID,StdntCollege,AdmitType,Term) %>% group_by(StdntCollege,AdmitType) %>% count(ID)
-headcountdf2 <- headcountdf2 %>% mutate(hcavg = n/numterms) %>% select(StdntCollege,AdmitType,hcavg)
-headcountdf2 <- headcountdf2 %>% group_by(StdntCollege,AdmitType) %>% summarize(sum(hcavg))
+headcountdf2 <- headcountdf2 %>% mutate(hcavg2 = n/numterms) %>% select(StdntCollege,AdmitType,hcavg2)
+headcountdf2 <- headcountdf2 %>% group_by(StdntCollege,AdmitType) %>% summarize(sum(hcavg2))
 names(headcountdf2)[3] <- "HeadCount"
 ```
 ###  Transform the Data Frame into UGRD FTES by Student College/Enrollment Status by Course/College
 ```{r Create Pivot2, echo=TRUE}
 # Transform the Row Values of Course College into Column Values for the Data Frame (using the dcast function)
-Enrollment_Status_Course_College_Pivot <- dcast(UGRD_FTE_THREEYRAVG2, StdntCollege+AdmitType~CrseCollege)
+Enrollment_Status_Course_College_Pivot <- dcast(UGRD_FTE_YRAVG2, StdntCollege+AdmitType~CrseCollege)
 # Remove the Extended Education CrseCollege Column from the data frame
 Enrollment_Status_Course_College_Pivot$`Extended Education` <- NULL
 # Replace the NA FTES values with zeros
@@ -87,46 +81,22 @@ Enrollment_Status_Course_College_Pivot[is.na(Enrollment_Status_Course_College_Pi
 
 ```
 ### Add HeadCount to the Enrollment_Status_Course_College_Pivot data frame
-```{r Add HeadCount, ECHO=TRUE}
+```{r Add HeadCount2, echo=TRUE}
 Enrollment_Status_Course_College_Pivot <- bind_cols(headcountdf2,Enrollment_Status_Course_College_Pivot) 
-#Drop the superfluous Columns from the data frame
+#Drop the extraneous Columns from the data frame
 Enrollment_Status_Course_College_Pivot$StdntCollege1 <- NULL
 Enrollment_Status_Course_College_Pivot$AdmitType1 <- NULL
 
 ```
 ### Write the Resulting Data Frames Out to a CSV file
-```{r Output Dataframe, ECHO=TRUE}
+```{r Output Dataframe, echo=TRUE}
 setwd("C:/Users/Richard/OneDrive/Rich Files/SSU/2018/SonomaStateICLM/project")
 #write.csv(Major_Course_College_Pivot,file = "Major_Course_College_Pivot.csv")
 write.csv(Enrollment_Status_Course_College_Pivot,file = "Enrollment_Status_Course_College_Pivot.csv")
 
 ```
-
-
-
-###  Output of FTES UGRD Statistics (Average of 3 Years)
-```{r Outuput1, echo=TRUE}
-kable(Major_Course_College_Pivot) %>% 
-kable_styling("striped", full_width = F, position = "center", font_size = 10)
-
-```
-###  Output of Undergraduate College Pivot
+###  Output of Undergraduate Major Course College Pivot
 ```{r Outuput2, echo=TRUE}
 kable(Major_Course_College_Pivot) %>% 
 kable_styling("striped", full_width = F, position = "center", font_size = 10)
 ```
-###  Plot 1 Bar Chart
-```{r}
-UGRD_FTE_THREEYRAVG %>% ggplot(aes(x=AdmitType,y=TotalUnits,fill=StdntCollege))+
-  geom_bar(stat="identity", width=0.5)+
-  theme_minimal()
-```
-### Plot 2 - Bar Chart
-```{r}
-College_Pivot %>% ggplot(aes(x=StdntCollege,y=TotUnits,fill=CrseCollege)) +
-  geom_bar(stat="identity", width=0.75) + coord_flip() +
-  theme(legend.title = element_text(colour="blue", size=8, face="bold"))+
-  theme(legend.text = element_text(colour="blue", size = 8, face = "bold"))+
-  ylab("Total Units")+xlab("Students' Major College")
-```
-
